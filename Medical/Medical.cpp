@@ -260,3 +260,14 @@ void medicalSupplyMenu(MedicalSupplyManager &manager) {
 
     } while (choice != 4);
 }
+
+int main() {
+    // Create the manager (loads CSV automatically)
+    MedicalSupplyManager manager;
+
+    // Enter the medical supply menu
+    medicalSupplyMenu(manager);
+
+    cout << "Exiting Medical Supply System. Goodbye!\n";
+    return 0;
+}
