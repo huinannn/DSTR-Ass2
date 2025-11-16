@@ -10,7 +10,7 @@ struct Ambulance {
     int  shift; // 0 = Morning, 1 = Afternoon, 2 = Midnight
 };
 
-const int MAX_AMBULANCES = 10;
+const int MAX_AMBULANCES = 100;
 
 class AmbulanceQueue {
 private:

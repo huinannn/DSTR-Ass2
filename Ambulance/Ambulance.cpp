@@ -19,9 +19,9 @@ using namespace std;
 // ==============================================
 
 AmbulanceQueue::AmbulanceQueue() {
-    front = 0;
-    rear  = -1;
-    count = 0;
+    front = 0; //first element
+    rear  = -1; //last element
+    count = 0; //total stored
 }
 
 bool AmbulanceQueue::isEmpty() const {
@@ -32,7 +32,7 @@ bool AmbulanceQueue::isFull() const {
     return count == MAX_AMBULANCES;
 }
 
-bool AmbulanceQueue::enqueue(const Ambulance& a) {
+bool AmbulanceQueue::enqueue(const Ambulance& a) { //
     if (isFull()) {
         cerr << "[ERROR] Queue is full. Cannot enqueue.\n";
         return false;
@@ -288,7 +288,7 @@ void AmbulanceManager::registerAmbulance() {
     while (true) {
         cout << "Enter choice (1-3): ";
         if ((cin >> shiftChoice) && (shiftChoice >= 1 && shiftChoice <= 3)) break;
-        cout << "[ERROR] Enter 1–3 only.\n";
+        cout << "[ERROR] Enter 1 - 3 only.\n";
         cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
