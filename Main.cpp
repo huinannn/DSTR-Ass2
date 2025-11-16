@@ -1,90 +1,97 @@
 #include <iostream>
+#include <string>
+#include <cstdlib>   // for system()
+#include <limits>
+#include <algorithm>
+
 using namespace std;
 
-// Include all role modules
-#include "Patient/Patient.hpp"
-#include "Medical/Medical.hpp"
-#include "Emergency/Emergency.hpp"
-#include "Ambulance/Ambulance.hpp"
-
 // ===============================
-// MAIN MENU INPUT VALIDATION
+// Function to get compile/run commands
 // ===============================
-int getValidatedInt(const string &prompt, int min, int max) {
-    int value;
+void getCompileRunCommands(const string &role, string &compileCmd, string &runCmd) {
+#ifdef _WIN32
+    string exeExt = ".exe";
+#else
+    string exeExt = "";
+#endif
 
-    while (true) {
-        cout << prompt;
-
-        // Ensure integer entered
-        if (cin >> value) {
-            // Clear leftover '\n'
-            cin.ignore(1000, '\n');
-
-            // Check range
-            if (value >= min && value <= max) {
-                return value;
-            }
-
-            cout << "[ERROR] Please enter a number between "
-                 << min << " and " << max << ".\n";
-        } else {
-            // Non-integer entered
-            cout << "[ERROR] Please enter a valid NUMBER.\n";
-            cin.clear();               // reset fail state
-            cin.ignore(1000, '\n');    // remove bad input
-        }
+    if (role == "patient") {
+        compileCmd = "g++ Patient/Patient.cpp -o Patient" + exeExt;
+        runCmd = "Patient" + exeExt;
+    } else if (role == "medical") {
+        compileCmd = "g++ Medical/Medical.cpp -o Medical" + exeExt;
+        runCmd = "Medical" + exeExt;
+    } else if (role == "emergency") {
+        compileCmd = "g++ Emergency/Emergency.cpp -o Emergency" + exeExt;
+        runCmd = "Emergency" + exeExt;
+    } else if (role == "ambulance") {
+        compileCmd = "g++ Ambulance/Ambulance.cpp -o Ambulance" + exeExt;
+        runCmd = "Ambulance" + exeExt;
     }
+
+#ifndef _WIN32
+    runCmd = "./" + runCmd; // Unix-style prefix
+#endif
 }
 
 // ===============================
-// MAIN PROGRAM
+// Main Program
 // ===============================
 int main() {
-    // Create one instance for each role
-    // PatientManager patientManager;
-    MedicalSupplyManager medicalManager;
-    // EmergencyManager emergencyManager;
-    // AmbulanceManager ambulanceManager;
-
-    int choice;
-
-    do {
-        cout << "\n=========================================\n";
-        cout << "      HOSPITAL PATIENT CARE SYSTEM\n";
+    while (true) {
         cout << "=========================================\n";
+        cout << "      HOSPITAL PATIENT CARE SYSTEM\n";
+        cout << "=========================================\n\n";
+
+        cout << "Choose a module to run:\n";
         cout << "1. Patient Admission Clerk\n";
         cout << "2. Medical Supply Manager\n";
         cout << "3. Emergency Department Officer\n";
         cout << "4. Ambulance Dispatcher\n";
-        cout << "5. Exit Program\n";
+        cout << "5. Exit\n";
 
-        // VALIDATED menu choice (1–5)
-        choice = getValidatedInt("Enter your choice: ", 1, 5);
+        string choiceStr;
+        getline(cin, choiceStr);
 
-        switch (choice) {
-            case 1:
-                // patientMenu(patientManager);
-                break;
-
-            case 2:
-                medicalSupplyMenu(medicalManager);
-                break;
-
-            case 3:
-                // emergencyMenu(emergencyManager);
-                break;
-
-            case 4:
-                // ambulanceMenu(ambulanceManager);
-                break;
-
-            case 5:
-                cout << "\nExiting system... Goodbye!\n";
-                break;
+        string role;
+        if (choiceStr == "1") role = "patient";
+        else if (choiceStr == "2") role = "medical";
+        else if (choiceStr == "3") role = "emergency";
+        else if (choiceStr == "4") role = "ambulance";
+        else if (choiceStr == "5") break;
+        else {
+            cout << "[ERROR] Invalid choice. Try again.\n\n";
+            continue;
         }
 
-    } while (choice != 5);
+        // Compile & run selected module
+        string compileCmd, runCmd;
+        getCompileRunCommands(role, compileCmd, runCmd);
 
+        cout << "\nCompiling " << role << " module...\n";
+        int compileResult = system(compileCmd.c_str());
+        if (compileResult != 0) {
+            cout << "[ERROR] Compilation failed. Check file paths.\n\n";
+            continue;
+        }
+
+        cout << "\nRunning " << role << " module...\n\n";
+        int runResult = system(runCmd.c_str());
+        if (runResult != 0) {
+            cout << "[ERROR] Running module failed.\n\n";
+        }
+
+        // Ask if user wants to continue
+        string cont;
+        cout << "\nDo you want to return to main menu? (y/n): ";
+        getline(cin, cont);
+        transform(cont.begin(), cont.end(), cont.begin(), ::tolower);
+        if (cont != "y" && cont != "yes") break;
+
+        cout << "\n";
+    }
+
+    cout << "\nExiting system. Goodbye!\n";
     return 0;
 }
